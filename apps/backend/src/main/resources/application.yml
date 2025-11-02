@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: techblog-backend
+  
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+      continue-on-error: false
+  
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# XSS Mode Configuration
+xss:
+  mode: vuln  # vuln | secure
+
+# JWT Security Configuration
+security:
+  jwt:
+    secret: TechBlogV2_JWT_Secret_Key_ChangeMe_At_Least_256bits_For_HS256_Algorithm
+    issuer: techblog
+    accessTtlMinutes: 30
+
+logging:
+  level:
+    com.techblog: INFO
+    org.springframework.security: WARN

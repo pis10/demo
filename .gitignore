@@ -1,0 +1,30 @@
+# Backend
+apps/backend/target/
+apps/backend/.mvn/
+apps/backend/mvnw
+apps/backend/mvnw.cmd
+
+# Frontend
+apps/frontend/node_modules/
+apps/frontend/dist/
+apps/frontend/.vite/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env.local
+.env.production.local
+
+# Database
+*.db
+*.sqlite

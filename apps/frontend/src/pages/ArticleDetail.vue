@@ -1,0 +1,259 @@
+<template>
+  <div class="article-detail-page">
+    <div class="container" v-if="!loading && article">
+      <article class="article-content">
+        <header class="article-header">
+          <h1>{{ article.title }}</h1>
+          <div class="article-meta">
+            <router-link :to="`/profile/${article.author.username}`" class="author-info">
+              <img :src="article.author.avatarUrl" :alt="article.author.username" />
+              <div>
+                <div class="author-name">{{ article.author.username }}</div>
+                <div class="publish-date">{{ formatDate(article.publishedAt) }}</div>
+              </div>
+            </router-link>
+            <div class="article-stats">
+              <span><el-icon><View /></el-icon> {{ article.likesCount }}</span>
+            </div>
+          </div>
+        </header>
+        
+        <div class="article-body">
+          <!-- XSS Rendering Note:
+               - VULN: render raw HTML to demonstrate XSS impact in article body
+               - SECURE: sanitize with DOMPurify to block execution -->
+          <div class="content"
+               v-if="configStore.xssMode === 'vuln'"
+               v-html="article.contentHtml"></div>
+          <div class="content"
+               v-else
+               v-html="pure(article.contentHtml)"></div>
+        </div>
+        
+        <div class="article-tags">
+          <span v-for="tag in article.tags" :key="tag.id" class="tag" :style="{ background: tag.color + '20', color: tag.color }">
+            {{ tag.name }}
+          </span>
+        </div>
+      </article>
+      
+      <section class="comments-section">
+        <h3>评论 ({{ comments.length }})</h3>
+        <div v-for="comment in comments" :key="comment.id" class="comment card">
+          <div class="comment-author">
+            <img :src="comment.user.avatarUrl" :alt="comment.user.username" />
+            <div>
+              <div class="comment-author-name">{{ comment.user.username }}</div>
+              <div class="comment-date">{{ formatDate(comment.createdAt) }}</div>
+            </div>
+          </div>
+          <!-- XSS Rendering Note:
+               - VULN: comments render raw HTML (stored XSS demonstration)
+               - SECURE: sanitize comment content before render -->
+          <div class="comment-content"
+               v-if="configStore.xssMode === 'vuln'"
+               v-html="comment.contentHtml"></div>
+          <div class="comment-content"
+               v-else
+               v-html="pure(comment.contentHtml)"></div>
+        </div>
+      </section>
+    </div>
+    
+    <div v-else-if="loading" class="loading">
+      <div class="spinner"></div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+// Article detail + comments view
+// - Demonstrates content rendering differences under VULN vs SECURE modes
+// - Uses DOMPurify in SECURE mode to prevent XSS
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import axios from '@/api/axios';
+import { useConfigStore } from '@/stores/config';
+import { pure } from '@/utils/xss';
+
+const route = useRoute();
+const configStore = useConfigStore();
+const article = ref(null);
+const comments = ref([]);
+const loading = ref(true);
+
+const fetchArticle = async () => {
+  try {
+    const response = await axios.get(`/articles/${route.params.id}`);
+    article.value = response.data;
+    
+    const commentsResponse = await axios.get(`/articles/${route.params.id}/comments`);
+    comments.value = commentsResponse.data;
+  } catch (error) {
+    console.error('Failed to fetch article:', error);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const formatDate = (date) => {
+  if (!date) return '';
+  return new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+onMounted(() => {
+  fetchArticle();
+});
+</script>
+
+<style scoped>
+.article-detail-page {
+  padding: var(--spacing-2xl) 0;
+  min-height: calc(100vh - 80px);
+}
+
+.article-content {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2xl);
+  margin-bottom: var(--spacing-xl);
+}
+
+.article-header {
+  margin-bottom: var(--spacing-2xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.article-header h1 {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.2;
+}
+
+.article-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  color: var(--color-text-primary);
+}
+
+.author-info img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--color-primary);
+}
+
+.author-name {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.publish-date {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.article-stats {
+  color: var(--color-text-muted);
+  display: flex;
+  gap: var(--spacing-lg);
+}
+
+.article-body {
+  margin-bottom: var(--spacing-2xl);
+}
+
+.content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: var(--color-text-primary);
+}
+
+.content :deep(h2),
+.content :deep(h3) {
+  margin-top: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.content :deep(ul),
+.content :deep(ol) {
+  margin-left: var(--spacing-xl);
+  margin-bottom: var(--spacing-md);
+}
+
+.content :deep(li) {
+  margin-bottom: var(--spacing-sm);
+}
+
+.article-tags {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 6px 14px;
+  border-radius: 14px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.comments-section {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-2xl);
+}
+
+.comments-section h3 {
+  margin-bottom: var(--spacing-xl);
+}
+
+.comment {
+  margin-bottom: var(--spacing-md);
+  padding: var(--spacing-lg);
+}
+
+.comment:hover {
+  transform: none;
+}
+
+.comment-author {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.comment-author img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.comment-author-name {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.comment-date {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.comment-content {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+</style>
