@@ -49,7 +49,7 @@ docker-compose up -d
 
 ## 模式切换（VULN / SECURE）
 
-- 页面左上角徽章点击切换（推荐）。切换会自动登出，重新登录即可。
+- 页面左上角徽章点击切换（推荐）。切换后**认证状态保持不变**，无需重新登录。
 - 或修改配置并重启：
   - 后端 `apps/backend/src/main/resources/application.yml`: `xss.mode: vuln|secure`
   - 前端 `apps/frontend/.env`: `VITE_XSS_MODE=vuln|secure`
