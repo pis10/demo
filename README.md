@@ -1,4 +1,6 @@
-# TechBlog - XSS 漏洞演示靶场
+# XSSBlog
+
+**Cross-Site Scripting Demo Blog** - XSS 漏洞演示靶场
 
 <div align="center">
 

@@ -12,11 +12,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.techblog</groupId>
-    <artifactId>techblog-backend</artifactId>
+    <groupId>com.xssblog</groupId>
+    <artifactId>xss-blog-backend</artifactId>
     <version>2.0.0</version>
-    <name>TechBlog Backend</name>
-    <description>XSS Demo Blog Backend (JWT-based)</description>
+    <name>XSSBlog Backend</name>
+    <description>Cross-Site Scripting Demo Blog - Backend (JWT-based Authentication)</description>
 
     <properties>
         <java.version>21</java.version>

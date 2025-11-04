@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: techblog-backend
+    name: xss-blog-backend
   
   datasource:
     url: jdbc:mysql://localhost:3306/blog?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
@@ -33,8 +33,8 @@ xss:
 # JWT Security Configuration
 security:
   jwt:
-    secret: TechBlogV2_JWT_Secret_Key_ChangeMe_At_Least_256bits_For_HS256_Algorithm
-    issuer: techblog
+    secret: XSSBlog_JWT_Secret_Key_ChangeMe_At_Least_256bits_For_HS256_Algorithm
+    issuer: xss-blog
     accessTtlMinutes: 30
   
   # Cookie Security Configuration (SECURE mode)
@@ -46,5 +46,5 @@ security:
 
 logging:
   level:
-    com.techblog: INFO
+    com.xssblog: INFO
     org.springframework.security: WARN

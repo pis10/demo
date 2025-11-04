@@ -2,8 +2,8 @@
   <div class="home-page">
     <div class="container">
       <div class="page-header">
-        <h1>最新文章</h1>
-        <p class="subtitle">探索技术前沿，分享开发经验</p>
+        <h1>XSSBlog</h1>
+        <p class="subtitle">Cross-Site Scripting Demo Blog - XSS 漏洞演示靶场</p>
       </div>
       
       <div v-if="loading" class="loading">

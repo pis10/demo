@@ -4,7 +4,7 @@
       <div class="logo-section">
         <router-link to="/" class="logo">
           <span class="logo-icon">⚡</span>
-          <span class="logo-text">TechBlog</span>
+          <span class="logo-text">XSSBlog</span>
           <el-tooltip :content="'点击切换到 ' + (configStore.xssMode === 'vuln' ? 'SECURE' : 'VULN') + ' 模式'" placement="bottom">
             <span class="badge" :class="modeBadgeClass" @click.prevent="toggleMode">{{ modeText }}</span>
           </el-tooltip>

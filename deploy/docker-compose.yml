@@ -3,7 +3,7 @@ version: '3.8'
 services:
   mysql:
     image: mysql:8.4
-    container_name: techblog-mysql
+    container_name: xss-blog-mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: blog
@@ -12,7 +12,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
-      - techblog-network
+      - xss-blog-network
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 20s
@@ -22,7 +22,7 @@ services:
     build:
       context: ./apps/backend
       dockerfile: Dockerfile
-    container_name: techblog-backend
+    container_name: xss-blog-backend
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/blog?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: root
@@ -34,7 +34,7 @@ services:
       mysql:
         condition: service_healthy
     networks:
-      - techblog-network
+      - xss-blog-network
     restart: unless-stopped
 
   frontend:
@@ -43,18 +43,18 @@ services:
       dockerfile: Dockerfile
       args:
         VITE_XSS_MODE: vuln
-    container_name: techblog-frontend
+    container_name: xss-blog-frontend
     ports:
       - "80:80"
     depends_on:
       - backend
     networks:
-      - techblog-network
+      - xss-blog-network
     restart: unless-stopped
 
 volumes:
   mysql_data:
 
 networks:
-  techblog-network:
+  xss-blog-network:
     driver: bridge

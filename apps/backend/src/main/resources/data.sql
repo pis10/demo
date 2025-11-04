@@ -1,4 +1,4 @@
--- Insert demo users
+-- 插入演示用户数据
 -- Password for all users: Admin#2025 / Attacker#2025 (BCrypt hash)
 -- Hash for 'Admin#2025': $2a$10$ESPycVV/G4uHvDILZhw09uYW4c0Iwgj.Kn0dvynVdhGA5tOE6jddS
 -- Hash for 'Attacker#2025': $2a$10$OAtJoG3svgJ0EjG6ZVTGXO5x26jr/f8TNfH6SWPOc1XE8Wtv7vShq
@@ -31,7 +31,7 @@ INSERT INTO tags (name, color) VALUES
 ('Tutorial', '#3498DB'),
 ('DevOps', '#95A5A6');
 
--- Insert demo articles
+-- 插入演示文章数据
 INSERT INTO articles (author_id, title, slug, excerpt, content_html, likes_count, published_at, created_at)
 VALUES
 (1, 'Web安全基础：XSS攻击原理与防御', 'xss-attack-defense', 
@@ -62,7 +62,7 @@ WHERE (a.slug = 'xss-attack-defense' AND t.name IN ('Security', 'XSS', 'Tutorial
    OR (a.slug = 'vue3-composition-api-guide' AND t.name IN ('JavaScript', 'Vue.js', 'Tutorial'))
    OR (a.slug = 'modern-frontend-toolchain' AND t.name IN ('JavaScript', 'DevOps'));
 
--- Insert demo comments
+-- 插入演示评论数据
 INSERT INTO comments (article_id, user_id, content_html, created_at)
 VALUES
 (1, 3, '非常实用的安全指南！建议补充一下CSP的配置示例。', NOW()),
@@ -70,7 +70,7 @@ VALUES
 (2, 3, '学到了，原来HttpOnly Cookie这么重要。', NOW()),
 (3, 1, 'Composition API确实让代码组织更清晰了，感谢分享！', NOW());
 
--- Insert demo feedbacks (including XSS demo payload for 场景 5)
+-- 插入演示反馈数据（包含场景 5 的 XSS 演示载荷）
 INSERT INTO feedbacks (email, content_html, status, created_at)
 VALUES
 ('normal@user.com', '网站设计很棒，但是搜索功能有时候响应比较慢，希望能优化一下。', 'NEW', NOW()),
