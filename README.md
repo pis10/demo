@@ -95,7 +95,7 @@ docker-compose up -d
 - Node **24 LTS**
 
 **后端**：
-- Spring Boot **3.4.1**
+- Spring Boot **3.5.1**
 - Spring Security **6.x**
 - JPA/Hibernate
 - JJWT **0.12.6**
