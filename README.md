@@ -69,8 +69,8 @@ docker-compose up -d
 | 项目 | VULN 模式 | SECURE 模式 |
 |------|----------|-------------|
 | **JWT 存储** | localStorage（可被 JS 读取） | HttpOnly Cookie（JS 无法访问） |
-| **内容渲染** | v-html 直接渲染 | DOMPurify 白名单过滤 |
-| **后端输出** | 不转义 | HtmlUtils.htmlEscape() |
+| **内容渲染** | v-html 直接渲染 | 场景 4 DOMPurify 过滤，其他文本渲染 |
+| **后端输出** | 不转义 | 场景 1/2/3/5 HTML 转义 |
 | **安全响应头** | 无 | CSP + X-Frame-Options |
 | **XSS 攻击** | ✅ 成功执行 | ❌ 被拦截 |
 
@@ -79,7 +79,7 @@ docker-compose up -d
 | 用户名 | 密码 | 角色 | 用途 |
 |--------|------|------|------|
 | admin | Admin#2025 | 管理员 | 场景 5（盲 XSS） |
-| attacker | Attacker#2025 | 普通用户 | 场景 4（Bio 社工） |
+| attacker | Attacker#2025 | 普通用户 | 场景 4（Bio XSS） |
 | alice | Admin#2025 | 普通用户 | 场景 3（评论蠕虫） |
 
 ## 演示场景
@@ -108,7 +108,7 @@ docker-compose up -d
 ### 场景 4：Bio 伪造登录页
 **目标**：全屏伪造登录界面钓鱼  
 **入口**：`/profile/{username}` 个人简介  
-**特点**：“会话已过期”提示，诱骗输入账号密码  
+**特点**："会话已过期"提示，诱骗输入账号密码  
 **预期**：用户输入后攻击者获取凭证
 
 ### 场景 5：盲 XSS 窃取管理员身份
@@ -133,7 +133,7 @@ http://localhost:5173/search?q=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E
 ## 技术栈
 - 前端：Vue 3、Vite、Element Plus、Pinia、Axios
 - 后端：Spring Boot 3、Spring Security、JPA/Hibernate、MySQL 8
-- 安全：HttpOnly Cookie、后端转义、DOMPurify 白名单
+- 安全：HttpOnly Cookie、HtmlUtils 转义、DOMPurify 白名单（仅场景 4）
 
 ## 参考
 - XSS 场景说明：`XSS演示场景说明.md`

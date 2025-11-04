@@ -75,7 +75,7 @@
       </div>
     </main>
     
-    <!-- 反馈详情弹窗（场景 5 落点）：VULN 直接渲染，SECURE 净化后渲染 -->
+    <!-- 反馈详情弹窗（场景 5 落点） -->
     <el-dialog
       v-model="showDetailDialog"
       title="反馈详情"
@@ -98,9 +98,7 @@
         </div>
         <div class="detail-content">
           <label>反馈内容：</label>
-          <!-- 盲 XSS（场景 5）渲染点：
-               - VULN：直接渲染用户提交的 HTML
-               - SECURE：使用 DOMPurify 净化后再渲染 -->
+          <!-- 盲 XSS（场景 5）渲染点 -->
           <div 
             v-if="configStore.xssMode === 'vuln'" 
             class="content-html" 
@@ -108,8 +106,8 @@
           </div>
           <div 
             v-else 
-            class="content-html" 
-            v-html="pure(currentFeedback.contentHtml)">
+            class="content-html">
+            {{ currentFeedback.contentHtml }}
           </div>
         </div>
         
@@ -129,8 +127,6 @@
 
 <script setup>
 // 管理后台 - 反馈列表与详情（场景 5：盲 XSS 落点）
-// - VULN：详情内的 HTML 原样渲染，可能执行恶意脚本
-// - SECURE：先用 DOMPurify 白名单净化再渲染
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useConfigStore } from '@/stores/config';

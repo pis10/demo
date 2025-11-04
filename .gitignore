@@ -12,6 +12,7 @@ apps/frontend/.vite/
 # IDE
 .idea/
 .vscode/
+.qoder/
 *.iml
 *.swp
 *.swo

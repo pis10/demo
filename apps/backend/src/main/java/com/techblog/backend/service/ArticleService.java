@@ -90,9 +90,9 @@ public class ArticleService {
     /**
      * 提交文章评论（需要登录）
      * 
-     * XSS 双模式处理：
-     * - VULN 模式：直接存储用户提交的 HTML 内容（存储型 XSS 漏洞）
-     * - SECURE 模式：对 HTML 内容进行转义后存储，防止 XSS 攻击
+     * XSS 场景 3 演示：评论蠕虫攻击
+     * - VULN 模式：直接存储用户提交的内容（存储型 XSS 漏洞）
+     * - SECURE 模式：对内容进行 HTML 转义后存储，防止 XSS 攻击
      * 
      * @param articleId 文章 ID
      * @param username 评论用户名（从 JWT 获取）

@@ -86,13 +86,12 @@
           </div>
           <!-- XSS 渲染说明：
                - VULN：评论原样渲染（存储型 XSS 示例）
-               - SECURE：渲染前先净化 -->
+               - SECURE：纯文本渲染 -->
           <div class="comment-content"
                v-if="configStore.xssMode === 'vuln'"
                v-html="comment.contentHtml"></div>
           <div class="comment-content"
-               v-else
-               v-html="pure(comment.contentHtml)"></div>
+               v-else>{{ comment.contentHtml }}</div>
         </div>
       </section>
     </div>
@@ -104,9 +103,7 @@
 </template>
 
 <script setup>
-// 文章详情与评论：演示两种模式下的内容渲染差异
-// - VULN：直接 v-html 渲染
-// - SECURE：通过 DOMPurify 净化后再渲染，防止 XSS
+// 文章详情与评论（场景 3：评论蠕虫）
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from '@/api/axios';

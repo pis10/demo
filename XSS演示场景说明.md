@@ -23,9 +23,9 @@ while true; do nc -l 7777; done
 ### 3. 测试账号
 | 用户名 | 密码 | 用途 |
 |--------|------|------|
-| alice | Admin#2025 | 场景 3 |
-| attacker | Attacker#2025 | 场景 4 |
-| admin | Admin#2025 | 场景 5 |
+| alice | Admin#2025 | 场景 3（评论蠕虫） |
+| attacker | Attacker#2025 | 场景 4（Bio 钓鱼） |
+| admin | Admin#2025 | 场景 5（盲 XSS） |
 
 ---
 
@@ -171,7 +171,7 @@ http://localhost:5173/search?q=<编码后的结果>
 
 - **SECURE 模式**：
   - 评论存储时被转义：`&lt;img src=x...&gt;`
-  - 前端渲染时被 DOMPurify 过滤
+  - 前端渲染为纯文本
   - 不执行，不传播
 
 ### 技术亮点
@@ -277,7 +277,8 @@ fetch('/api/auth/me').then(r=>r.json()).then(j=>{
     ```
 
 - **SECURE 模式**：
-  - DOMPurify 过滤掉 `<img>` 标签
+  - 反馈存储时被转义：`&lt;img src=x...&gt;`
+  - 前端渲染为纯文本
   - 不执行，收集器无数据
 
 ### 技术细节
@@ -287,8 +288,8 @@ fetch('/api/auth/me').then(r=>r.json()).then(j=>{
 - **会话劫持**：获取 Cookie 可伪造管理员身份
 
 ### 防御要点
-- 后台页面禁用 `v-html` 渲染用户输入
-- 或将反馈内容放在沙箱 iframe 中只读展示
+- **后端**：存储前进行 HTML 转义
+- **前端**：使用文本渲染而非 `v-html`
 
 ---
 
@@ -296,8 +297,10 @@ fetch('/api/auth/me').then(r=>r.json()).then(j=>{
 
 ### 后端防御
 ```java
-// 1. HTML 转义
-String sanitized = HtmlUtils.htmlEscape(userInput);
+// 1. HTML 转义（场景 1/2/3/5）
+if (xssProperties.isSecure()) {
+    content = HtmlUtils.htmlEscape(userInput);
+}
 
 // 2. CSP 响应头（SECURE 模式）
 .contentSecurityPolicy(csp -> csp.policyDirectives(
@@ -309,16 +312,18 @@ String sanitized = HtmlUtils.htmlEscape(userInput);
 
 ### 前端防御
 ```javascript
-// 1. DOMPurify 白名单过滤
+// 1. 文本渲染（场景 1/2/3/5）
+<div>{{ userInput }}</div>  // ✅ 安全
+
+// 2. DOMPurify 白名单过滤（场景 4）
 import DOMPurify from 'dompurify';
 const safe = DOMPurify.sanitize(html, {
   ALLOWED_TAGS: ['p', 'b', 'i', 'em', 'strong', 'a'],
   ALLOWED_ATTR: { 'a': ['href', 'title'] }
 });
 
-// 2. 避免 v-html，优先用文本插值
-<div>{{ userInput }}</div>  // ✅ 安全
-<div v-html="userInput"></div>  // ❌ 危险
+// 3. 避免不安全的 v-html
+<div v-html="userInput"></div>  // ❌ 危险（仅场景 4 VULN 模式使用）
 ```
 
 ### JWT 存储
@@ -355,11 +360,11 @@ cookie.setSameSite("Strict");
 3. **第三阶段**：代码 Review，讲解防御机制实现
 
 ### 重点强调
-- Cookie 安全属性的重要性
-- 输出编码 vs 输入验证
-- DOMPurify 白名单机制
-- CSP 策略配置
-- 最小权限原则
+- **Cookie 安全属性**：HttpOnly + Secure + SameSite
+- **输出编码**：后端 HTML 转义 + 前端文本渲染
+- **分场景防御**：场景 1/2/3/5 纯文本，场景 4 DOMPurify 过滤
+- **CSP 策略**：限制脚本来源，防止内联脚本
+- **最小权限原则**：普通用户无法访问管理后台
 
 ---
 

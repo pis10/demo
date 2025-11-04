@@ -10,8 +10,9 @@ import java.time.LocalDateTime;
  * 反馈实体类
  * 用于存储用户提交的反馈信息
  * 
- * 安全注意：
- * - contentHtml 字段在 VULN 模式下存在盲 XSS 风险（场景 5）
+ * XSS 场景 5：盲 XSS
+ * - contentHtml 字段在 VULN 模式下可能包含恶意代码
+ * - 管理员查看反馈时触发（政击者无法直接观察执行结果）
  */
 @Entity
 @Table(name = "feedbacks")
@@ -32,8 +33,9 @@ public class Feedback {
     private String email;
     
     /**
-     * 反馈内容（HTML 格式）
-     * 注意：此字段是盲 XSS 攻击的触发点
+     * 反馈内容
+     * VULN 模式：原始内容（可能包含恶意 HTML）
+     * SECURE 模式：转义后的安全内容
      */
     @Column(name = "content_html", columnDefinition = "TEXT")
     private String contentHtml;
