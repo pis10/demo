@@ -10,7 +10,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * 
  * 允许的源：
  * - localhost:5173 (Vite 开发服务器)
- * - 127.0.0.1:5173 (本地回环地址)
+ * - localhost:5174 (Webpack 开发服务器)
+ * - 127.0.0.1:5173, 127.0.0.1:5174 (本地回环地址)
  * - localhost:80/localhost (生产环境)
  * 
  * 注意：仅用于开发和教学环境，生产环境需要更严格的 CORS 策略
@@ -28,7 +29,9 @@ public class WebConfig implements WebMvcConfigurer {
                 // 允许的源地址（包含 localhost 和 127.0.0.1）
                 .allowedOrigins(
                     "http://localhost:5173",
+                    "http://localhost:5174",
                     "http://127.0.0.1:5173",
+                    "http://127.0.0.1:5174",
                     "http://localhost:80",
                     "http://localhost"
                 )
