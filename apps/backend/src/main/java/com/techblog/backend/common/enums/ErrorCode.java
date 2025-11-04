@@ -8,7 +8,7 @@ package com.techblog.backend.common.enums;
  */
 public enum ErrorCode {
     
-    // ==================== 通用错误 (1xxx) ====================
+    // ==================== 通用错误 ====================
     
     /**
      * 未知错误
@@ -25,12 +25,7 @@ public enum ErrorCode {
      */
     RESOURCE_NOT_FOUND("RESOURCE_NOT_FOUND", "Resource not found", 404),
     
-    /**
-     * 请求方法不支持
-     */
-    METHOD_NOT_ALLOWED("METHOD_NOT_ALLOWED", "Method not allowed", 405),
-    
-    // ==================== 认证/授权错误 (2xxx) ====================
+    // ==================== 认证错误 ====================
     
     /**
      * 未认证（未登录）
@@ -47,58 +42,12 @@ public enum ErrorCode {
      */
     INVALID_CREDENTIALS("INVALID_CREDENTIALS", "Invalid username or password", 401),
     
-    /**
-     * Token 无效或已过期
-     */
-    INVALID_TOKEN("INVALID_TOKEN", "Invalid or expired token", 401),
-    
-    // ==================== 用户相关错误 (3xxx) ====================
+    // ==================== 用户错误 ====================
     
     /**
      * 用户已存在（用户名或邮箱重复）
      */
-    USER_ALREADY_EXISTS("USER_ALREADY_EXISTS", "User already exists", 409),
-    
-    /**
-     * 用户不存在
-     */
-    USER_NOT_FOUND("USER_NOT_FOUND", "User not found", 404),
-    
-    /**
-     * 邮箱已被使用
-     */
-    EMAIL_ALREADY_EXISTS("EMAIL_ALREADY_EXISTS", "Email is already in use", 409),
-    
-    // ==================== 文章相关错误 (4xxx) ====================
-    
-    /**
-     * 文章不存在
-     */
-    ARTICLE_NOT_FOUND("ARTICLE_NOT_FOUND", "Article not found", 404),
-    
-    /**
-     * 文章标题重复
-     */
-    ARTICLE_TITLE_EXISTS("ARTICLE_TITLE_EXISTS", "Article title already exists", 409),
-    
-    // ==================== 评论相关错误 (5xxx) ====================
-    
-    /**
-     * 评论不存在
-     */
-    COMMENT_NOT_FOUND("COMMENT_NOT_FOUND", "Comment not found", 404),
-    
-    /**
-     * 评论内容为空
-     */
-    COMMENT_EMPTY("COMMENT_EMPTY", "Comment content cannot be empty", 400),
-    
-    // ==================== 反馈相关错误 (6xxx) ====================
-    
-    /**
-     * 反馈不存在
-     */
-    FEEDBACK_NOT_FOUND("FEEDBACK_NOT_FOUND", "Feedback not found", 404);
+    USER_ALREADY_EXISTS("USER_ALREADY_EXISTS", "User already exists", 409);
     
     // ==================== 枚举字段 ====================
     

@@ -7,7 +7,6 @@ import com.techblog.backend.mapper.ArticleMapper;
 import com.techblog.backend.mapper.CommentMapper;
 import com.techblog.backend.repository.ArticleRepository;
 import com.techblog.backend.repository.CommentRepository;
-import com.techblog.backend.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ public class ArticleService {
     
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
     private final ArticleMapper articleMapper;
     private final CommentMapper commentMapper;
     
@@ -34,18 +32,15 @@ public class ArticleService {
      * 构造函数，注入依赖
      * @param articleRepository 文章仓库
      * @param commentRepository 评论仓库
-     * @param userRepository 用户仓库
      * @param articleMapper 文章对象映射器
      * @param commentMapper 评论对象映射器
      */
     public ArticleService(ArticleRepository articleRepository,
                          CommentRepository commentRepository,
-                         UserRepository userRepository,
                          ArticleMapper articleMapper,
                          CommentMapper commentMapper) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
         this.articleMapper = articleMapper;
         this.commentMapper = commentMapper;
     }

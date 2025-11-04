@@ -61,34 +61,5 @@ public class ArticleMapper {
         return dto;
     }
     
-    /**
-     * 将文章实体转换为简化 DTO（用于列表展示）
-     * 不包含文章完整内容，减少数据传输量
-     * 
-     * @param article 文章实体对象
-     * @return ArticleDto 简化的数据传输对象
-     */
-    public ArticleDto toSimpleDto(Article article) {
-        if (article == null) {
-            return null;
-        }
-        
-        ArticleDto dto = new ArticleDto();
-        dto.setId(article.getId());
-        dto.setTitle(article.getTitle());
-        dto.setSlug(article.getSlug());
-        dto.setExcerpt(article.getExcerpt());
-        // 不包含 contentHtml，减少数据量
-        dto.setLikesCount(article.getLikesCount());
-        dto.setPublishedAt(article.getPublishedAt());
-        dto.setCreatedAt(article.getCreatedAt());
-        
-        // 转换关联对象
-        dto.setAuthor(userMapper.toSimpleDto(article.getAuthor()));
-        dto.setTags(article.getTags().stream()
-            .map(tagMapper::toDto)
-            .collect(Collectors.toList()));
-        
-        return dto;
-    }
+
 }
