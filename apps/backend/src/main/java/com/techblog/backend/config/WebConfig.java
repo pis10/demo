@@ -34,8 +34,14 @@ public class WebConfig implements WebMvcConfigurer {
                 )
                 // 允许的 HTTP 方法
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                // 允许所有请求头
-                .allowedHeaders("*")
+                // 允许的请求头（白名单）
+                .allowedHeaders(
+                    "Content-Type",
+                    "Authorization",
+                    "X-Requested-With",
+                    "Accept",
+                    "Origin"
+                )
                 // 允许携带凭证（Cookie、Authorization 头等）
                 .allowCredentials(true)
                 // 预检请求缓存时间（秒）

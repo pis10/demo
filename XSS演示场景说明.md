@@ -612,7 +612,7 @@ Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'
 
 ---
 
-## 🚀 总结
+## 🎯 总结
 
 本靶场通过 **4 层渐进式场景**，全面演示了 XSS 攻击的危害和防御方法：
 
@@ -622,6 +622,12 @@ Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'
 - ✅ **L3**：理解盲 XSS 的隐蔽性
 
 通过 **VULN / SECURE 双态模式对比**，直观展示了安全防御的效果。
+
+**防御体系**：
+- 🍪 **Cookie 安全**：HttpOnly + Secure + SameSite
+- 🛡️ **输入验证**：后端 HTML 转义 + 前端 DOMPurify 过滤
+- 🔒 **安全响应头**：CSP + X-Frame-Options + X-XSS-Protection
+- ✅ **动态切换**：根据模式自动启用/禁用防御机制
 
 **祝演示顺利！** 🎉
 

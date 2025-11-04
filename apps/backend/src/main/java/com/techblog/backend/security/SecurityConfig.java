@@ -1,5 +1,6 @@
 package com.techblog.backend.security;
 
+import com.techblog.backend.config.XssProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -34,12 +35,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final XssProperties xssProperties;
     
     /**
      * 构造函数注入依赖
      */
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
+                         XssProperties xssProperties) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.xssProperties = xssProperties;
     }
     
     /**
@@ -54,6 +58,10 @@ public class SecurityConfig {
     /**
      * 安全过滤器链配置
      * 定义 HTTP 安全策略和访问控制规则
+     * 
+     * 根据 XSS 模式动态配置安全响应头：
+     * - VULN 模式：不启用安全响应头，允许 XSS 攻击成功执行（教学演示）
+     * - SECURE 模式：启用完整的安全响应头（CSP、X-Frame-Options、X-XSS-Protection）
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -77,6 +85,28 @@ public class SecurityConfig {
             )
             // 在 UsernamePasswordAuthenticationFilter 之前添加 JWT 过滤器
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        // 根据 XSS 模式动态配置安全响应头
+        // SECURE 模式：启用完整的安全防护
+        // VULN 模式：不启用安全响应头，保证 XSS 攻击能够成功执行（教学演示目的）
+        if (xssProperties.isSecure()) {
+            http.headers(headers -> headers
+                // Content Security Policy（内容安全策略）
+                // 限制资源加载来源，防止恶意脚本注入
+                .contentSecurityPolicy(csp -> csp.policyDirectives(
+                    "default-src 'self'; " +                    // 默认只允许同源资源
+                    "script-src 'self'; " +                      // 只允许同源脚本
+                    "style-src 'self' 'unsafe-inline'; " +      // 允许同源样式和内联样式（Element Plus需要）
+                    "img-src 'self' data: https:; " +           // 允许同源、Data URI、HTTPS图片
+                    "font-src 'self'; " +                       // 只允许同源字体
+                    "connect-src 'self'; " +                    // 只允许同源AJAX请求
+                    "frame-ancestors 'none';"                   // 禁止被iframe嵌入（防点击劫持）
+                ))
+                // X-Frame-Options: 禁止页面被iframe嵌入（防点击劫持）
+                .frameOptions(frame -> frame.deny())
+            );
+        }
+        // VULN 模式下不配置安全响应头，保留默认行为，允许XSS攻击成功
         
         return http.build();
     }

@@ -1,5 +1,6 @@
 package com.techblog.backend.controller;
 
+import com.techblog.backend.config.CookieProperties;
 import com.techblog.backend.config.XssProperties;
 import com.techblog.backend.dto.*;
 import com.techblog.backend.service.AuthService;
@@ -26,13 +27,18 @@ public class AuthController {
     private final AuthService authService;
     // XSS 属性配置，用于判断当前模式（VULN/SECURE）
     private final XssProperties xssProperties;
+    // Cookie 安全配置，用于设置 Cookie 属性
+    private final CookieProperties cookieProperties;
     
     /**
      * 构造函数注入依赖
      */
-    public AuthController(AuthService authService, XssProperties xssProperties) {
+    public AuthController(AuthService authService, 
+                         XssProperties xssProperties,
+                         CookieProperties cookieProperties) {
         this.authService = authService;
         this.xssProperties = xssProperties;
+        this.cookieProperties = cookieProperties;
     }
     
     /**
@@ -123,11 +129,11 @@ public class AuthController {
      */
     private void setSecureCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie("access", token);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(false); // Set to true in production with HTTPS
+        cookie.setHttpOnly(cookieProperties.getHttpOnly());
+        cookie.setSecure(cookieProperties.getSecure());
         cookie.setPath("/");
-        cookie.setMaxAge(30 * 60); // 30 minutes
-        cookie.setAttribute("SameSite", "Strict");
+        cookie.setMaxAge(cookieProperties.getMaxAge());
+        cookie.setAttribute("SameSite", cookieProperties.getSameSite());
         response.addCookie(cookie);
     }
 }

@@ -1,10 +1,10 @@
 package com.techblog.backend.service;
 
+import com.techblog.backend.common.exception.ResourceNotFoundException;
 import com.techblog.backend.dto.*;
 import com.techblog.backend.entity.Article;
-import com.techblog.backend.entity.Comment;
-import com.techblog.backend.entity.Tag;
-import com.techblog.backend.entity.User;
+import com.techblog.backend.mapper.ArticleMapper;
+import com.techblog.backend.mapper.CommentMapper;
 import com.techblog.backend.repository.ArticleRepository;
 import com.techblog.backend.repository.CommentRepository;
 import com.techblog.backend.repository.UserRepository;
@@ -27,89 +27,55 @@ public class ArticleService {
     private final ArticleRepository articleRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final ArticleMapper articleMapper;
+    private final CommentMapper commentMapper;
     
     /**
      * 构造函数，注入依赖
      * @param articleRepository 文章仓库
      * @param commentRepository 评论仓库
      * @param userRepository 用户仓库
+     * @param articleMapper 文章对象映射器
+     * @param commentMapper 评论对象映射器
      */
     public ArticleService(ArticleRepository articleRepository,
                          CommentRepository commentRepository,
-                         UserRepository userRepository) {
+                         UserRepository userRepository,
+                         ArticleMapper articleMapper,
+                         CommentMapper commentMapper) {
         this.articleRepository = articleRepository;
         this.commentRepository = commentRepository;
         this.userRepository = userRepository;
+        this.articleMapper = articleMapper;
+        this.commentMapper = commentMapper;
     }
     
     public Page<ArticleDto> getAllArticles(Pageable pageable) {
         return articleRepository.findAllByOrderByPublishedAtDesc(pageable)
-            .map(this::mapToDto);
+            .map(articleMapper::toDto);
     }
     
     public ArticleDto getArticleById(Long id) {
         Article article = articleRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Article not found"));
-        return mapToDto(article);
+            .orElseThrow(() -> new ResourceNotFoundException("Article", id));
+        return articleMapper.toDto(article);
     }
     
     public ArticleDto getArticleBySlug(String slug) {
         Article article = articleRepository.findBySlug(slug)
-            .orElseThrow(() -> new RuntimeException("Article not found"));
-        return mapToDto(article);
+            .orElseThrow(() -> new ResourceNotFoundException("Article with slug: " + slug));
+        return articleMapper.toDto(article);
     }
     
     public List<CommentDto> getArticleComments(Long articleId) {
         return commentRepository.findByArticleIdOrderByCreatedAtDesc(articleId)
             .stream()
-            .map(this::mapCommentToDto)
+            .map(commentMapper::toDto)
             .collect(Collectors.toList());
     }
     
     public Page<ArticleDto> getArticlesByAuthor(String username, Pageable pageable) {
         return articleRepository.findByAuthorUsernameOrderByPublishedAtDesc(username, pageable)
-            .map(this::mapToDto);
-    }
-    
-    private ArticleDto mapToDto(Article article) {
-        ArticleDto dto = new ArticleDto();
-        dto.setId(article.getId());
-        dto.setTitle(article.getTitle());
-        dto.setSlug(article.getSlug());
-        dto.setExcerpt(article.getExcerpt());
-        dto.setContentHtml(article.getContentHtml());
-        dto.setLikesCount(article.getLikesCount());
-        dto.setPublishedAt(article.getPublishedAt());
-        dto.setCreatedAt(article.getCreatedAt());
-        dto.setAuthor(mapUserToDto(article.getAuthor()));
-        dto.setTags(article.getTags().stream().map(this::mapTagToDto).collect(Collectors.toList()));
-        return dto;
-    }
-    
-    private UserDto mapUserToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setAvatarUrl(user.getAvatarUrl());
-        dto.setBannerUrl(user.getBannerUrl());
-        dto.setBio(user.getBio());
-        return dto;
-    }
-    
-    private TagDto mapTagToDto(Tag tag) {
-        TagDto dto = new TagDto();
-        dto.setId(tag.getId());
-        dto.setName(tag.getName());
-        dto.setColor(tag.getColor());
-        return dto;
-    }
-    
-    private CommentDto mapCommentToDto(Comment comment) {
-        CommentDto dto = new CommentDto();
-        dto.setId(comment.getId());
-        dto.setContentHtml(comment.getContentHtml());
-        dto.setCreatedAt(comment.getCreatedAt());
-        dto.setUser(mapUserToDto(comment.getUser()));
-        return dto;
+            .map(articleMapper::toDto);
     }
 }

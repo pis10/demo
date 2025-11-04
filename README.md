@@ -55,8 +55,8 @@ docker-compose up -d
   - 前端 `apps/frontend/.env`: `VITE_XSS_MODE=vuln|secure`
 
 对比要点：
-- VULN：JWT 存 localStorage；输入直接渲染；XSS 可成功
-- SECURE：JWT 为 HttpOnly Cookie；后端转义 + DOMPurify；XSS 被拦截
+- VULN：JWT 存 localStorage；输入直接渲染；无安全响应头；XSS 可成功
+- SECURE：JWT 为 HttpOnly Cookie；后端转义 + DOMPurify；CSP + X-Frame-Options + X-XSS-Protection；XSS 被拦截
 
 ## 测试账号
 
@@ -84,9 +84,32 @@ docker-compose up -d
 💡 **注意**：Vue 中通过 v-html 插入的 `<script>` 标签不会执行，需使用事件处理器型 payload（如 onerror、onload）。
 
 ## 技术栈
-- 前端：Vue 3、Vite、Element Plus、Pinia、Axios
-- 后端：Spring Boot 3、Spring Security、JPA/Hibernate、MySQL 8
-- 安全：HttpOnly Cookie、后端转义、DOMPurify 白名单
+
+**前端**：
+- Vue **3.5.13**
+- Vite **6.0.5**
+- Element Plus **2.9.1**
+- Pinia **2.3.0**
+- Axios **1.7.9**
+- DOMPurify **3.2.3**
+- Node **24 LTS**
+
+**后端**：
+- Spring Boot **3.4.1**
+- Spring Security **6.x**
+- JPA/Hibernate
+- JJWT **0.12.6**
+- MySQL **8.4 LTS**
+- JDK **21**
+- Maven **3.9+**
+
+**安全防御（SECURE模式）**：
+- HttpOnly + Secure + SameSite Cookie
+- 后端 HTML 转义（HtmlUtils.htmlEscape）
+- 前端白名单过滤（DOMPurify）
+- Content Security Policy (CSP)
+- X-Frame-Options (防点击劫持)
+- X-XSS-Protection (浏览器XSS过滤器)
 
 ## 参考
 - XSS 场景说明：`XSS演示场景说明.md`

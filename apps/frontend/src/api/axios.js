@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { getXssMode } from '@/utils/xss';
+import { handleAxiosError } from '@/utils/errors';
+import { getToken, removeToken } from '@/utils/storage';
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -17,8 +19,8 @@ instance.interceptors.request.use(
     const xssMode = getXssMode();
     
     if (xssMode === 'vuln') {
-      // VULN 模式：从 localStorage 取 Token 并加到请求头（不安全示范）
-      const token = localStorage.getItem('accessToken');
+      // VULN 模式：从统一存储取 Token 并加到请求头（不安全示范）
+      const token = getToken();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -40,16 +42,20 @@ instance.interceptors.response.use(
     return response;
   },
   (error) => {
-    if (error.response?.status === 401) {
-      // 401 未认证：清理本地 Token 并跳转登录页
-      localStorage.removeItem('accessToken');
+    // 使用统一错误处理
+    const apiError = handleAxiosError(error);
+    
+    // 401 未认证：清理 Token 并跳转登录页
+    if (apiError.status === 401) {
+      removeToken();
       // 避免重定向循环：不在登录页/个人主页再跳转
       if (!window.location.pathname.includes('/login') && 
           !window.location.pathname.includes('/profile/')) {
         window.location.href = '/login';
       }
     }
-    return Promise.reject(error);
+    
+    return Promise.reject(apiError);
   }
 );
 

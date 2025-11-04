@@ -1,7 +1,9 @@
 package com.techblog.backend.service;
 
+import com.techblog.backend.common.exception.ResourceNotFoundException;
 import com.techblog.backend.dto.UserDto;
 import com.techblog.backend.entity.User;
+import com.techblog.backend.mapper.UserMapper;
 import com.techblog.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,13 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
     
     /**
      * 构造函数，注入依赖
      * @param userRepository 用户仓库
+     * @param userMapper 用户对象映射器
      */
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
     
     /**
@@ -32,12 +37,12 @@ public class UserService {
      * 
      * @param username 用户名
      * @return 用户 DTO 对象
-     * @throws RuntimeException 用户不存在时抛出
+     * @throws ResourceNotFoundException 用户不存在时抛出
      */
     public UserDto getUserByUsername(String username) {
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
-        return mapToDto(user);
+            .orElseThrow(() -> new ResourceNotFoundException("User", username));
+        return userMapper.toDto(user);
     }
     
     /**
@@ -50,33 +55,14 @@ public class UserService {
      * @param username 用户名
      * @param bio 新的 Bio 内容（支持 HTML）
      * @return 更新后的用户 DTO
-     * @throws RuntimeException 用户不存在时抛出
+     * @throws ResourceNotFoundException 用户不存在时抛出
      */
     @Transactional
     public UserDto updateBio(String username, String bio) {
         User user = userRepository.findByUsername(username)
-            .orElseThrow(() -> new RuntimeException("User not found"));
+            .orElseThrow(() -> new ResourceNotFoundException("User", username));
         user.setBio(bio);
         userRepository.save(user);
-        return mapToDto(user);
-    }
-    
-    /**
-     * 将用户实体转换为 DTO 对象
-     * 
-     * @param user 用户实体
-     * @return 用户 DTO
-     */
-    private UserDto mapToDto(User user) {
-        UserDto dto = new UserDto();
-        dto.setId(user.getId());
-        dto.setUsername(user.getUsername());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole().name());
-        dto.setAvatarUrl(user.getAvatarUrl());
-        dto.setBannerUrl(user.getBannerUrl());
-        dto.setBio(user.getBio());
-        dto.setCreatedAt(user.getCreatedAt());
-        return dto;
+        return userMapper.toDto(user);
     }
 }
