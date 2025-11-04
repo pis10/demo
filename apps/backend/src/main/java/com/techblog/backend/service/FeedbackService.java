@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 负责用户反馈的提交和管理逻辑
  * 
  * 安全注意：
- * - 此服务涉及 XSS L3 盲 XSS 政击场景
+ * - 此服务涉及 XSS 场景 5 盲 XSS 攻击场景
  */
 @Service
 public class FeedbackService {

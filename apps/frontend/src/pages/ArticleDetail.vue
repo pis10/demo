@@ -59,6 +59,17 @@
               </el-button>
             </el-form-item>
           </el-form>
+          
+          <!-- XSS 提示（场景 3 评论蠕虫）：仅在 VULN 模式展示攻击示例 -->
+          <div class="demo-info" v-if="configStore.xssMode === 'vuln'">
+            <h4>⚠️ 评论蠕虫演示（场景 3）</h4>
+            <p>当前处于 VULN 模式，评论内容将不经过滤直接存储。</p>
+            <p style="margin-top: 8px;">示例 Payload（自传播到 3 篇文章）：</p>
+            <code style="font-size: 0.75rem;">&lt;img src=x onerror="/*见文档完整蠕虫代码*/alert('评论 XSS')"&gt;</code>
+            <p style="margin-top: 8px; font-size: 0.85em; color: var(--color-text-muted);">
+              💡 完整 Payload 请查看《XSS演示场景说明.md》
+            </p>
+          </div>
         </div>
         <div v-else class="login-prompt card">
           <p>登录后才能发表评论。 <router-link to="/login">立即登录</router-link></p>
@@ -283,6 +294,36 @@ onMounted(() => {
 
 .comment-form :deep(.el-form-item:last-child) {
   margin-bottom: 0;
+}
+
+.comment-form .demo-info {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-md);
+  background: rgba(251, 146, 60, 0.1);
+  border: 2px solid rgba(251, 146, 60, 0.3);
+  border-radius: var(--radius-md);
+}
+
+.comment-form .demo-info h4 {
+  color: var(--color-accent);
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: 0.95rem;
+}
+
+.comment-form .demo-info p {
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.comment-form .demo-info code {
+  display: block;
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background: var(--color-bg-elevated);
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  color: var(--color-accent);
 }
 
 .login-prompt {

@@ -16,7 +16,7 @@
           </div>
         </div>
         
-        <!-- 个人简介（L2 落点）：VULN 直接渲染，SECURE 先净化再渲染 -->
+        <!-- 个人简介（场景 4 落点）：VULN 直接渲染，SECURE 先净化再渲染 -->
         <div class="profile-bio card">
           <h3>个人简介</h3>
           <div v-if="configStore.xssMode === 'vuln'" class="bio-content" v-html="user.bio || '暂无简介'"></div>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-// 个人主页（L2）：演示存储型 XSS（伪装登录表单）
+// 个人主页（场景 4）：演示存储型 XSS（伪造登录页面）
 // - VULN：user.bio 原样渲染（可能执行恶意脚本）
 // - SECURE：使用 DOMPurify 净化后再渲染
 import { ref, computed, onMounted } from 'vue';

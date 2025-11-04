@@ -15,7 +15,7 @@ CREATE TABLE users (
     role VARCHAR(20) NOT NULL DEFAULT 'USER',
     avatar_url VARCHAR(255),
     banner_url VARCHAR(255),
-    bio VARCHAR(1000),  -- 限制长度，防止恶意注入过长内容
+    bio VARCHAR(3000),  -- 限制长度，防止恶意注入过长内容
     created_at DATETIME NOT NULL,
     updated_at DATETIME,
     INDEX idx_username (username),

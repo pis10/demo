@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * 用于存储用户提交的反馈信息
  * 
  * 安全注意：
- * - contentHtml 字段在 VULN 模式下存在盲 XSS 风险（L3 场景）
+ * - contentHtml 字段在 VULN 模式下存在盲 XSS 风险（场景 5）
  */
 @Entity
 @Table(name = "feedbacks")

