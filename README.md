@@ -26,8 +26,6 @@
 
 ## 快速开始
 
-### 本地运行
-
 **前置要求**：Node.js 20+、JDK 21、MySQL 8.0、Maven 3.9+
 
 ```bash
@@ -38,19 +36,12 @@ cd apps/backend
 mvn spring-boot:run
 # 访问 http://localhost:8080
 
-# 3. 启动前端（新终端）
+# 3. 启动前端
 cd apps/frontend
 npm install
 npm run dev
 # 访问 http://localhost:5173
 ```
-
-### Docker 一键部署
-```
-cd deploy
-docker-compose up -d
-```
-访问 `http://localhost`
 
 ## 模式切换
 
@@ -78,9 +69,9 @@ docker-compose up -d
 
 | 用户名 | 密码 | 角色 | 用途 |
 |--------|------|------|------|
-| admin | Admin#2025 | 管理员 | 场景 5（盲 XSS） |
-| attacker | Attacker#2025 | 普通用户 | 场景 4（Bio XSS） |
-| alice | Admin#2025 | 普通用户 | 场景 3（评论蠕虫） |
+| admin | Admin#2025 | 管理员 | 场景 3（盲 XSS，管理员查看反馈触发） |
+| alice | Admin#2025 | 普通用户 | 场景 4（评论蠕虫发起者） |
+| attacker | Attacker#2025 | 普通用户 | 场景 5（Bio 钓鱼，个人主页 XSS） |
 
 ## 演示场景
 

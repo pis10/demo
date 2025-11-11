@@ -59,7 +59,7 @@ public class ProfileController {
     }
     
     /**
-     * 更新用户个人简介（XSS 场景 4 演示入口点）
+     * 更新用户个人简介（XSS 场景 5 演示入口点）
      * 
      * @param request 请求体，包含 bio 字段
      * @param authentication Spring Security 认证对象

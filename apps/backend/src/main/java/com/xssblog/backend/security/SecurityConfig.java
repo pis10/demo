@@ -98,7 +98,7 @@ public class SecurityConfig {
                 .contentSecurityPolicy(csp -> csp.policyDirectives(
                     "default-src 'self'; " +                    // 默认只允许同源资源
                     "script-src 'self'; " +                      // 只允许同源脚本
-                    "style-src 'self' 'unsafe-inline'; " +      // 允许同源样式和内联样式（Element Plus需要）
+                    "style-src 'self' 'unsafe-inline'; " +      // 允许同源样式和内联样式（Element Plus 组件库需要）
                     "img-src 'self' data: https:; " +           // 允许同源、Data URI、HTTPS图片
                     "font-src 'self'; " +                       // 只允许同源字体
                     "connect-src 'self'; " +                    // 只允许同源AJAX请求

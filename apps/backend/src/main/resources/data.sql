@@ -1,7 +1,8 @@
 -- 插入演示用户数据
--- Password for all users: Admin#2025 / Attacker#2025 (BCrypt hash)
--- Hash for 'Admin#2025': $2a$10$ESPycVV/G4uHvDILZhw09uYW4c0Iwgj.Kn0dvynVdhGA5tOE6jddS
--- Hash for 'Attacker#2025': $2a$10$OAtJoG3svgJ0EjG6ZVTGXO5x26jr/f8TNfH6SWPOc1XE8Wtv7vShq
+-- 用户密码及哈希值对应关系（BCrypt 加密）：
+--   admin 用户    -> 密码: Admin#2025    -> Hash: $2a$10$ESPycVV/G4uHvDILZhw09uYW4c0Iwgj.Kn0dvynVdhGA5tOE6jddS
+--   alice 用户    -> 密码: Admin#2025    -> Hash: $2a$10$ESPycVV/G4uHvDILZhw09uYW4c0Iwgj.Kn0dvynVdhGA5tOE6jddS (与 admin 相同)
+--   attacker 用户 -> 密码: Attacker#2025 -> Hash: $2a$10$OAtJoG3svgJ0EjG6ZVTGXO5x26jr/f8TNfH6SWPOc1XE8Wtv7vShq
 INSERT INTO users (username, email, password_hash, role, avatar_url, banner_url, bio, created_at, updated_at) 
 VALUES 
 ('admin', 'admin@techblog.com', '$2a$10$ESPycVV/G4uHvDILZhw09uYW4c0Iwgj.Kn0dvynVdhGA5tOE6jddS', 'ADMIN', 

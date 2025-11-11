@@ -45,9 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     /**
      * 过滤器核心逻辑：提取并验证 JWT
      */
-    /**
-     * 过滤器核心逻辑：提取并验证 JWT
-     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, 
                                     HttpServletResponse response, 
@@ -77,12 +74,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
     
-    /**
-     * 从 HTTP 请求中提取 JWT Token
-     * 优先级：
-     * 1. Authorization 请求头（VULN 模式）
-     * 2. HttpOnly Cookie（SECURE 模式）
-     */
     /**
      * 从 HTTP 请求中提取 JWT Token
      * 优先级：

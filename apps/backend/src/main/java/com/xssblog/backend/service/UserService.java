@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 
  * 主要功能：
  * - 根据用户名查询用户信息
- * - 更新用户 Bio（个人简介）——XSS 场景 4 攻击入口
+ * - 更新用户 Bio（个人简介）——XSS 场景 5 攻击入口
  */
 @Service
 public class UserService {
@@ -46,7 +46,7 @@ public class UserService {
     }
     
     /**
-     * 更新用户 Bio（XSS 场景 4 入口点）
+     * 更新用户 Bio（XSS 场景 5 入口点）
      * 
      * 安全注意：
      * - VULN 模式：直接存储用户提交的 HTML，可能包含 XSS 攻击代码
