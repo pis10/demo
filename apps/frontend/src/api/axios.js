@@ -2,6 +2,7 @@ import axios from 'axios';
 import { getXssMode } from '@/utils/xss';
 import { handleAxiosError } from '@/utils/errors';
 import { getToken, removeToken } from '@/utils/storage';
+import router from '@/router';
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
@@ -48,10 +49,18 @@ instance.interceptors.response.use(
     // 401 未认证：清理 Token 并跳转登录页
     if (apiError.status === 401) {
       removeToken();
-      // 避免重定向循环：不在登录页/个人主页再跳转
-      if (!window.location.pathname.includes('/login') && 
-          !window.location.pathname.includes('/profile/')) {
-        window.location.href = '/login';
+      
+      // 定义公开访问的路由（无需认证）
+      const publicRoutes = ['/login', '/register', '/feedback'];
+      const currentPath = router.currentRoute.value.path;
+      
+      // 检查当前是否在公开路由或个人主页
+      const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
+      const isProfilePage = currentPath.startsWith('/profile/');
+      
+      // 只有在非公开路由且非个人主页时才跳转到登录页
+      if (!isPublicRoute && !isProfilePage) {
+        router.push('/login');
       }
     }
     
