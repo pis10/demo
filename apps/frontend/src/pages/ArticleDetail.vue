@@ -60,12 +60,12 @@
             </el-form-item>
           </el-form>
           
-          <!-- XSS 提示（场景 3 评论蠕虫）：仅在 VULN 模式展示攻击示例 -->
+          <!-- XSS 提示（场景 4 评论蠕虫）：仅在 VULN 模式展示攻击示例 -->
           <div class="demo-info" v-if="configStore.xssMode === 'vuln'">
-            <h4>⚠️ 评论蠕虫演示（场景 3）</h4>
+            <h4>⚠️ 评论蠕虫演示（场景 4）</h4>
             <p>当前处于 VULN 模式，评论内容将不经过滤直接存储。</p>
             <p style="margin-top: 8px;">示例 Payload（自传播到 3 篇文章）：</p>
-            <code style="font-size: 0.75rem;">&lt;img src=x onerror="/*见文档完整蠕虫代码*/alert('评论 XSS')"&gt;</code>
+            <code style="font-size: 0.75rem;">&lt;img src=x onerror="/*见文档完整蠕虫代码*/"&gt;</code>
             <p style="margin-top: 8px; font-size: 0.85em; color: var(--color-text-muted);">
               💡 完整 Payload 请查看《XSS演示场景说明.md》
             </p>
@@ -103,7 +103,7 @@
 </template>
 
 <script setup>
-// 文章详情与评论（场景 3：评论蠕虫）
+// 文章详情与评论（场景 4）：演示评论蠕虫
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import axios from '@/api/axios';

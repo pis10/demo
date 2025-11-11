@@ -17,7 +17,7 @@ import org.springframework.web.util.HtmlUtils;
  * 反馈服务
  * 负责用户反馈的提交和管理逻辑
  * 
- * XSS 场景 5：盲 XSS 攻击场景
+ * XSS 场景 3：XSS盲打攻击场景
  * - VULN 模式：直接存储用户提交的内容，管理员查看时触发 XSS
  * - SECURE 模式：对内容进行 HTML 转义后存储，防止 XSS 攻击
  */
@@ -44,8 +44,8 @@ public class FeedbackService {
     /**
      * 提交用户反馈（无需登录）
      * 
-     * XSS 场景 5 入口点：
-     * - VULN 模式：直接存储用户提交的内容（盲 XSS 漏洞）
+     * XSS 场景 3 入口点：
+     * - VULN 模式：直接存储用户提交的内容（XSS盲打漏洞）
      * - SECURE 模式：对内容进行 HTML 转义后存储，防止 XSS
      */
     @Transactional
@@ -57,7 +57,7 @@ public class FeedbackService {
             // SECURE 模式：HTML 转义后存储
             feedback.setContentHtml(HtmlUtils.htmlEscape(request.getContent()));
         } else {
-            // VULN 模式：直接存储（盲 XSS 漏洞）
+            // VULN 模式：直接存储（XSS盲打漏洞）
             feedback.setContentHtml(request.getContent());
         }
         

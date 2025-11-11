@@ -90,7 +90,7 @@ public class ArticleController {
      * 
      * XSS 演示说明：
      * - VULN 模式：后端直接存储用户提交的 HTML，存在存储型 XSS 漏洞
-     * - SECURE 模式：后端对 HTML 进行转义，前端再用 DOMPurify 二次过滤
+     * - SECURE 模式：后端对 HTML 进行转义
      * 
      * @param id 文章 ID
      * @param request 评论请求（content 字段）

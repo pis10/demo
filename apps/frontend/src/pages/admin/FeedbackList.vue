@@ -75,7 +75,7 @@
       </div>
     </main>
     
-    <!-- 反馈详情弹窗（场景 5 落点） -->
+    <!-- 反馈详情弹窗（场景 3 落点） -->
     <el-dialog
       v-model="showDetailDialog"
       title="反馈详情"
@@ -98,7 +98,7 @@
         </div>
         <div class="detail-content">
           <label>反馈内容：</label>
-          <!-- 盲 XSS（场景 5）渲染点 -->
+          <!-- 盲 XSS（场景 3）渲染点 -->
           <div 
             v-if="configStore.xssMode === 'vuln'" 
             class="content-html" 
@@ -126,7 +126,7 @@
 </template>
 
 <script setup>
-// 管理后台 - 反馈列表与详情（场景 5：盲 XSS 落点）
+// 管理后台 - 反馈列表与详情（场景 3：XSS盲打落点）
 import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useConfigStore } from '@/stores/config';

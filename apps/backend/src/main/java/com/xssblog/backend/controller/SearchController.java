@@ -15,8 +15,8 @@ import java.util.Map;
  * XSS 演示场景 1/2 的入口点：反射型 XSS 攻击
  * 
  * 演示场景：
- * - 场景 1：基础反射型 XSS PoC（如 <img src=x onerror=alert(1)>）
- * - 场景 2：静默画像收集（localStorage.getItem('accessToken')）
+ * - 场景 1：Hello, XSS（基础弹窗验证，如 <img src=x onerror=alert(1)>）
+ * - 场景 2：窃取用户JWT（localStorage.getItem('accessToken')）
  * 
  * 双态实现：
  * - VULN 模式：直接拼接用户输入，不进行 HTML 转义

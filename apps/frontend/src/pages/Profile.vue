@@ -58,7 +58,7 @@
 </template>
 
 <script setup>
-// 个人主页（场景 4）：演示存储型 XSS（伪造登录页面）
+// 个人主页（场景 5）：演示存储型 XSS（伪造登录页钓鱼）
 // - VULN：user.bio 原样渲染（可能执行恶意脚本）
 // - SECURE：使用 DOMPurify 净化后再渲染
 import { ref, computed, onMounted } from 'vue';
